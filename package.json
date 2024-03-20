@@ -1,0 +1,16 @@
+{
+  "name": "node-api-mastery",
+  "version": "1.0.0",
+  "description": "I intend to master node after this course",
+  "main": "app.js",
+  "scripts": {
+    "test": "start",
+    "start": "node app.js"
+  },
+  "author": "Eniwealth",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2"
+  }
+}
