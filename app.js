@@ -40,8 +40,8 @@ app.use("/api/login", loginRoutes);
 app.use("/api/products", productRoutes);
 
 app.use((error, req, res, next) => {
-    console.log(error);
-    const status = res.statusCode || 500;
+    console.log("Error:",error);
+    const status = error.statusCode || 500;
     const message = error.message;
     res.status(status).json({message : message});
 })
