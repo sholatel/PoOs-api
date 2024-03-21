@@ -4,18 +4,18 @@ const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
-const loginController = require('../controller/register');
+const registerController = require('../controllers/register');
 
-router.get('/', loginController.getUsers);
+router.get('/', registerController.getUsers);
 
-router.post('/verify-email', loginController.sendMailToUser);
+router.post('/verify-email', registerController.sendMailToUser);
 
-router.post('/verify-email/:token', loginController.verifyEmailWithToken);
+router.post('/verify-email/:token', registerController.verifyEmailWithToken);
 
-router.post('/', loginController.createUser);
+router.post('/', registerController.createUser);
 
-router.put("/:userId", auth, loginController.updateUser);
+router.put("/:userId", auth, registerController.updateUser);
 
-router.delete('/userId', loginController.deleteUser);
+router.delete('/userId', registerController.deleteUser);
 
 module.exports = router;

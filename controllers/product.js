@@ -38,23 +38,25 @@ exports.createProduct = async (req, res, next) => {
 };
 
 exports.getProduct = async (req, res, next) => {
-    try {
-        const productId = req.params.productId;
+  try {
+      const productId = req.params.productId;
 
-        const manufacturerId = req.params.manufacturerId;
+      const product = await Product.findById(productId).populate({
+          path: 'manufacturer',
+          select: 'name contractAddress'
+      });
 
-        const product = await Product.findOne({ _id: productId, manufacturer: manufacturerId });
+      if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+      }
 
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-
-        res.status(200).json({ message: 'Product found', product: product });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+      res.status(200).json({ message: 'Product found', product: product });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
 };
+
 
 exports.getTotalProducts = async (req, res, next) => {
     try {
