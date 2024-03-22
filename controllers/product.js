@@ -6,6 +6,10 @@ const Product = require('../models/productSchema');
 
 const Authenticated = require('../models/authenticated');
 
+const Category = require('../models/category');
+
+const _ = require('lodash');
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -62,6 +66,7 @@ exports.getProduct = async (req, res, next) => {
       select: 'name contractAddress'
     });
 
+    const manufacturerId = product.manufacturer._id;
     const productName = product.name;
     let status;
     if (product) {
@@ -74,7 +79,8 @@ exports.getProduct = async (req, res, next) => {
       product: productName,
       productId: productId,
       requester: userAgent,
-      status: status
+      status: status,
+      manufacturer: manufacturerId 
     });
 
     await authenticatedProduct.save();
@@ -83,17 +89,9 @@ exports.getProduct = async (req, res, next) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const totalAuthentications = await Authenticated.countDocuments({
-      product: productName
-    });
-
-    const authdocs = await Authenticated.find({ product: productName });
-
     res.status(200).json({
       message: 'Product found',
       product: product,
-      totalAuthentications: totalAuthentications,
-      authdocs: authdocs
     });
   } catch (error) {
     console.error(error);
@@ -102,49 +100,18 @@ exports.getProduct = async (req, res, next) => {
 };
 
 
-exports.getTotalProducts = async (req, res, next) => {
-    try {
-        const manufacturerId = req.user.userId; 
-        const totalProducts = await Product.countDocuments({ manufacturer: manufacturerId });
-
-        res.status(200).json({ message: 'Total products retrieved', totalProducts: totalProducts });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
 
 exports.getCategories = async (req, res, next) => {
   try {
-    const manufacturerId = req.user.userId;
+    const manufacturerId = req.user.userId; 
 
     const products = await Product.find({ manufacturer: manufacturerId }).select('category');
 
     const categoryIds = [...new Set(products.map(product => product.category))];
 
-    const categories = await Category.aggregate([
-      { $match: { _id: { $in: categoryIds } } },
-      {
-        $group: {
-          _id: null,
-          totalCategories: { $sum: 1 }
-        }
-      }
-    ]);
+    const categories = await Category.find({ _id: { $in: categoryIds } });
 
-    const categoriesData = await Category.find({ _id: { $in: categoryIds } });
-
-    const categoriesWithProductsCount = categoriesData.map(category => {
-      const categoryProductCount = products.filter(product => product.category.toString() === category._id.toString()).length;
-      return {
-        _id: category._id,
-        name: category.name,
-        description: category.description,
-        productCount: categoryProductCount
-      };
-    });
-
-    res.status(200).json({ message: 'Categories retrieved', totalCategories: categories[0]?.totalCategories || 0, categories: categoriesWithProductsCount });
+    res.status(200).json({ message: 'Categories retrieved', categories: categories });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
@@ -152,5 +119,80 @@ exports.getCategories = async (req, res, next) => {
 };
 
 
+exports.createCategory = async (req, res, next) => {
+  try {
+    const categoryName = req.body.name;
+    const category = await Category.findOne({ name: categoryName });
+
+    if (category) {
+        const error = new Error('Category already exists.');
+        error.statusCode = 422;
+        throw error;
+    }
+
+    const newCategory = new Category(_.pick(req.body, ['name', 'description']));
+    
+    const result = await newCategory.save();
+
+    const pickedCategory = _.pick(result, ['_id', 'name', 'description']);
+    res.status(201).json({ 
+        message: "Category created successfully",
+        user: pickedCategory
+    });
+} catch (err) {
+    if (!err.statusCode) {
+        console.log(err.message);
+        err.statusCode = 500;
+    }
+    next(err);
+}
+}
 
 
+exports.getAuthenticatedProducts = async (req, res, next) => {
+  try {
+    const manufacturerId = req.user.userId; 
+
+    const authenticatedProducts = await Authenticated.find({ manufacturer: manufacturerId })
+    
+    res.status(200).json({ message: 'Authenticated products retrieved', products: authenticatedProducts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+exports.getManufacturerStats = async (req, res, next) => {
+  try {
+    const manufacturerId = req.user.userId;
+
+    const productCount = await Product.countDocuments({ manufacturer: manufacturerId });
+    const categoryCount = await Category.countDocuments({ manufacturer: manufacturerId });
+    const authCount = await Authenticated.countDocuments({ manufacturer: manufacturerId });
+
+    res.status(200).json({
+      message: 'Manufacturer statistics retrieved',
+      productCount: productCount,
+      categoryCount: categoryCount,
+      authCount: authCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+exports.getManufacturerProducts = async (req, res, next) => {
+  try {
+    const manufacturerId = req.user.userId; 
+
+    const products = await Product.find({ manufacturer: manufacturerId });
+
+    res.status(200).json({ message: 'Manufacturer products retrieved', products: products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

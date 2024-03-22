@@ -19,6 +19,13 @@ const loginRoutes = require('./routes/login');
 
 app.use(bodyparser.json())
 
+const cors = require('cors');
+
+app.use(cors({
+    origin: ['http://localhost:3000'],
+    allowedHeaders: ['Content-Type', 'x-auth-token']
+}))
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

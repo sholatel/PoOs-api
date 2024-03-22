@@ -4,21 +4,24 @@ const { auth } = require('../middleware/auth');
 
 const productController = require('../controllers/product');
 
-const multer = require('multer');
-
-
 
 const router = express.Router();
 
 
 
-router.get('/total', auth, productController.getTotalProducts);
+router.get('/statistics/', auth,  productController.getManufacturerStats); //passed
 
-router.get('/categories', auth, productController.getCategories);
+router.get('/product-requests', auth,  productController.getAuthenticatedProducts) //passed;
 
-router.get('/:productId', productController.getProduct);
+router.post("/create-category", auth, productController.createCategory); //passed
 
-router.post('/', auth,  productController.createProduct);
+router.get('/', auth, productController.getManufacturerProducts) //passed
+
+router.get('/categories', auth,  productController.getCategories); //passed
+
+router.get('/:productId', productController.getProduct); //passed
+
+router.post('/', auth,  productController.createProduct); //passed
 
 
 module.exports = router;

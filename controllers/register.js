@@ -23,7 +23,7 @@ exports.createUser = async (req, res, next) => {
             throw error;
         }
 
-        const newUser = new User(_.pick(req.body, ['name', 'email', 'industry', 'password', 'address' ]));
+        const newUser = new User(_.pick(req.body, ['name', 'email', 'industry', 'password', 'address',  'idNumber']));
         
         const salt = await bcrypt.genSalt(10);
         newUser.password = await bcrypt.hash(newUser.password, salt);
@@ -69,13 +69,14 @@ exports.verifyEmailWithToken = async (req, res) => {
 }
 
 
-exports.getUsers = (req, res, next) => {
+exports.getUser = (req, res, next) => {
 
 const userId = req.user.Id;
 
 User.findOne({userId : userId})
 .then(user => {
-    res.status(200).json({message: 'User fetched successfully', user: user})
+    const pickedUser = _.pick(user, ['_id', 'name', 'email','industry', 'address',  'idNumber'])
+    return res.status(200).json({message: 'User fetched successfully', user: pickedUser})
 })
 .catch( err =>{
     if (!err.statusCode){

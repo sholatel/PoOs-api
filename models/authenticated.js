@@ -22,7 +22,14 @@ const authenticatedSchema = new Schema({
     status: {
         type: String,
         required: true
-    }
+    },
+
+    manufacturer: {
+        type: Schema.Types.ObjectId,
+        ref: 'Manufacturer',
+        required: true
+    },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Authenticated', authenticatedSchema);

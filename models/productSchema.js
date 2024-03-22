@@ -29,7 +29,7 @@ const ProductSchema = new Schema({
         required: true,
     },
     barcode: {
-        type: Number,
+        type: String,
         required: true,
     },
 
