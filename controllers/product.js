@@ -105,11 +105,30 @@ exports.getCategories = async (req, res, next) => {
   try {
     const manufacturerId = req.user.userId; 
 
+    // const products = await Product.find({ manufacturer: manufacturerId }).select('category');
+
+    // const categoryIds = [...new Set(products.map(product => product.category))];
+
+    //const categories = await Category.find({ _id: { $in: categoryIds } });
+    const categories = await Category.find({ manufacturer:manufacturerId });
+
+    res.status(200).json({ message: 'Categories retrieved', categories: categories });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getCategoriesFromProduct = async (req, res, next) => {
+  try {
+    const manufacturerId = req.user.userId; 
+
     const products = await Product.find({ manufacturer: manufacturerId }).select('category');
 
     const categoryIds = [...new Set(products.map(product => product.category))];
 
     const categories = await Category.find({ _id: { $in: categoryIds } });
+    
 
     res.status(200).json({ message: 'Categories retrieved', categories: categories });
   } catch (error) {
@@ -120,9 +139,10 @@ exports.getCategories = async (req, res, next) => {
 
 
 exports.createCategory = async (req, res, next) => {
+  const manufacturerId = req.user.userId; 
   try {
     const categoryName = req.body.name;
-    const category = await Category.findOne({ name: categoryName });
+    const category = await Category.findOne({ name: categoryName  });
 
     if (category) {
         const error = new Error('Category already exists.');
@@ -130,8 +150,12 @@ exports.createCategory = async (req, res, next) => {
         throw error;
     }
 
-    const newCategory = new Category(_.pick(req.body, ['name', 'description']));
-    
+    // const newCategory = new Category(_.pick(req.body, ['name', 'description', 'manufacturer']));
+    const newCategory = new Category({
+      name:req.body?.name,
+      description:req.body?.description,
+      manufacturer:manufacturerId
+    });
     const result = await newCategory.save();
 
     const pickedCategory = _.pick(result, ['_id', 'name', 'description']);

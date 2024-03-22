@@ -8,6 +8,11 @@ const categorySchema = new Schema({
     },
     description: {
         type: String
+    },
+    manufacturer: {
+        type:mongoose.Types.ObjectId,
+        ref:"Manufacturer",
+        required:true
     }
 });
 
