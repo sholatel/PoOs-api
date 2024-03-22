@@ -22,7 +22,7 @@ app.use(bodyparser.json())
 const cors = require('cors');
 
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
     allowedHeaders: ['Content-Type', 'x-auth-token']
 }))
 
