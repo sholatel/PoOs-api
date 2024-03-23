@@ -10,6 +10,9 @@ const Category = require('../models/category');
 
 const _ = require('lodash');
 
+
+const { ObjectId } = require('mongodb');
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -21,6 +24,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage }).single('imageUrl');
+
+
 
 exports.createProduct = async (req, res, next) => {
   try {
@@ -34,10 +39,15 @@ exports.createProduct = async (req, res, next) => {
         resource_type: 'image'
       });
 
+      const timestamp = new Date().getTime();
+      const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+      const numericId = parseInt(timestamp.toString() + randomNumber.toString());
+
       const product = new Product({
+        productId: numericId, 
         name: req.body.name,
         description: req.body.description,
-        productId: req.body.productId,
+        nafdacId: req.body.nafdacId,
         quantity: req.body.quantity,
         expiryDate: req.body.expiryDate,
         barcode: req.body.barcode,
@@ -48,7 +58,15 @@ exports.createProduct = async (req, res, next) => {
 
       await product.save();
 
-      res.status(201).json({ message: 'Product created successfully', product: product });
+      const { _id, category, ...productWithoutIdAndCategory } = product.toObject();
+
+      await Category.findOneAndUpdate(
+        { _id: category },
+        { $push: { products: product.productId} },
+        { new: true }
+      );
+
+      res.status(201).json({ message: 'Product created successfully', product: productWithoutIdAndCategory });
     });
   } catch (error) {
     console.error(error);
@@ -56,12 +74,13 @@ exports.createProduct = async (req, res, next) => {
   }
 };
 
+
 exports.getProduct = async (req, res, next) => {
   try {
     const productId = req.params.productId;
     const userAgent = req.headers['user-agent'];
 
-    const product = await Product.findById(productId).populate({
+    const product = await Product.findOne({ productId: productId }).populate({
       path: 'manufacturer',
       select: 'name contractAddress'
     });
@@ -105,11 +124,6 @@ exports.getCategories = async (req, res, next) => {
   try {
     const manufacturerId = req.user.userId; 
 
-    // const products = await Product.find({ manufacturer: manufacturerId }).select('category');
-
-    // const categoryIds = [...new Set(products.map(product => product.category))];
-
-    //const categories = await Category.find({ _id: { $in: categoryIds } });
     const categories = await Category.find({ manufacturer:manufacturerId });
 
     res.status(200).json({ message: 'Categories retrieved', categories: categories });
@@ -121,14 +135,17 @@ exports.getCategories = async (req, res, next) => {
 
 exports.getCategoriesFromProduct = async (req, res, next) => {
   try {
-    const manufacturerId = req.user.userId; 
+    const manufacturerId = req.user.userId;
 
     const products = await Product.find({ manufacturer: manufacturerId }).select('category');
 
     const categoryIds = [...new Set(products.map(product => product.category))];
 
     const categories = await Category.find({ _id: { $in: categoryIds } });
-    
+
+    for (let category of categories) {
+      category.products = await Product.find({ category: category._id });
+    }
 
     res.status(200).json({ message: 'Categories retrieved', categories: categories });
   } catch (error) {
@@ -136,6 +153,7 @@ exports.getCategoriesFromProduct = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 exports.createCategory = async (req, res, next) => {
@@ -150,7 +168,7 @@ exports.createCategory = async (req, res, next) => {
         throw error;
     }
 
-    // const newCategory = new Category(_.pick(req.body, ['name', 'description', 'manufacturer']));
+    
     const newCategory = new Category({
       name:req.body?.name,
       description:req.body?.description,

@@ -2,28 +2,28 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
+    productId: {
+        type: Number,
+        unique: true
+    },
     name: {
         type: String,
         required: true,
-        //minLength: 5,
         maxLength: 50,
     },
     description: {
         type: String,
         required: true,
     },
-
-    productId: {
+    nafdacId: {
         type: String,
         required: true,
         minLength: 4,
     },
-
     quantity: {
-        type: Number,   
+        type: Number,
         required: true,
     },
-
     expiryDate: {
         type: String,
         required: true,
@@ -32,24 +32,20 @@ const ProductSchema = new Schema({
         type: String,
         required: true,
     },
-
     category: {
         type: Schema.Types.ObjectId,
         ref: 'Category',
         required: true
     },
-    
     manufacturer: {
         type: Schema.Types.ObjectId,
         ref: 'Manufacturer',
         required: true
     },
-    
-    imageUrl : {
+    imageUrl: {
         type: String,
-        required : true,
+        required: true,
     }
-
-}, { timestamps: true });
+}, { timestamps: true});
 
 module.exports = mongoose.model('Product', ProductSchema);
