@@ -101,7 +101,7 @@ exports.sendMailToUser = async (req, res, next) => {
         { expiresIn: '1h' }
     );
 
-    const loginLink = `http://your_domain/login?token=${token}`;
+    const loginLink = `https://p-oos-frontend.vercel.app/signup/verify-account/${token}`;
 
     const transporter = nodemailer.createTransport({
 
