@@ -38,7 +38,7 @@ const ManufacturerSchema = new Schema({
     },
     isFirstTimeLogin: {
         type: 'boolean',
-        default: false,
+        default: true,
     },
     products: [{
         type: Schema.Types.ObjectId,

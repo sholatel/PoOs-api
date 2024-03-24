@@ -71,9 +71,9 @@ exports.verifyEmailWithToken = async (req, res) => {
 
 exports.getUser = (req, res, next) => {
 
-    const userId = req.user.Id;
+    const userId = req.user.userId;
 
-    User.findOne({ userId: userId })
+    User.findById(userId)
         .then(user => {
             const pickedUser = _.pick(user, ['_id', 'name', 'email', 'industry', 'address', 'idNumber', 'contractAddress', "isFirstTimeLogin"])
             return res.status(200).json({ message: 'User fetched successfully', user: pickedUser })
@@ -101,7 +101,7 @@ exports.sendMailToUser = async (req, res, next) => {
         { expiresIn: '1h' }
     );
 
-    const loginLink = `http://your_domain/login?token=${token}`;
+    const loginLink = `https://p-oos-frontend.vercel.app/signup/verify-account/${token}`;
 
     const transporter = nodemailer.createTransport({
 

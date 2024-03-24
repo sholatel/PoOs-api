@@ -40,7 +40,7 @@ exports.LoginUser = async (req, res, next) => {
             config.get('jwtPrivateKey'),
             { expiresIn: '1h' }
         );
-
+        console
         res.status(200).json({ message: "Authentication successful", token: token, isFirstLogin: isFirstLogin });
     } catch (error) {
         console.error(error);

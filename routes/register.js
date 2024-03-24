@@ -10,7 +10,7 @@ router.get('/', auth, registerController.getUser);
 
 router.post('/verify-email', registerController.sendMailToUser);
 
-router.post('/verify-email/:token', registerController.verifyEmailWithToken);
+router.get('/verify-email/:token', registerController.verifyEmailWithToken);
 
 router.post('/', registerController.createUser);
 
