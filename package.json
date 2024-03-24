@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon app.js",
     "test": "start",
-    "start": "node app.js"
+    "start": "node app.js",
+    "pm2-start": "pm2 start app.js"
   },
   "author": "Eniwealth",
   "license": "ISC",
