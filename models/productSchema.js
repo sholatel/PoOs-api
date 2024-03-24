@@ -9,7 +9,7 @@ const ProductSchema = new Schema({
     name: {
         type: String,
         required: true,
-        maxLength: 50,
+        
     },
     description: {
         type: String,
@@ -18,7 +18,7 @@ const ProductSchema = new Schema({
     nafdacId: {
         type: String,
         required: true,
-        minLength: 4,
+    
     },
     quantity: {
         type: Number,

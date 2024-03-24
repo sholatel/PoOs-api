@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
 
-const config = require('config');
+const conFig = require('../configure');
 
 exports.LoginUser = async (req, res, next) => {
     try {
@@ -37,7 +37,7 @@ exports.LoginUser = async (req, res, next) => {
 
         const token = jwt.sign(
             { userId: user._id, email: user.email, isFirstLogin: isFirstLogin },
-            config.get('jwtPrivateKey'),
+            conFig.jwtKey,
             { expiresIn: '1h' }
         );
         console

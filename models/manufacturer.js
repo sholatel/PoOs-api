@@ -5,8 +5,7 @@ const ManufacturerSchema = new Schema({
     name: {
         type: 'string',
         required: true,
-        minLength: 5,
-        maxLength: 50,
+        
     },
     email: {
         type: 'string',
@@ -16,7 +15,6 @@ const ManufacturerSchema = new Schema({
     password: {
         type: 'string',
         required: true,
-        minLength: 5,
         maxLength: 1024,
     },
     industry: {

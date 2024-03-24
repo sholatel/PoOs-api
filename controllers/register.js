@@ -49,7 +49,7 @@ exports.verifyEmailWithToken = async (req, res) => {
     const token = req.params.token;
 
     try {
-        const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
+        const decoded = jwt.verify(token, conFig.jwtKey);
         const userId = decoded.userId;
 
         const user = await User.findById(userId);
@@ -97,7 +97,7 @@ exports.sendMailToUser = async (req, res, next) => {
 
     const token = jwt.sign(
         { userId: user._id, email: user.email },
-        config.get('jwtPrivateKey'),
+        conFig.jwtKey,
         { expiresIn: '1h' }
     );
 
