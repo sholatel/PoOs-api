@@ -22,7 +22,7 @@ app.use(bodyparser.json())
 const cors = require('cors');
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: ['http://localhost:3000', 'http://localhost:3001', "https://p-oos-frontend.vercel.app"],
     allowedHeaders: ['Content-Type', 'x-auth-token']
 }))
 
