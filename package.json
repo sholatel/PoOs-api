@@ -1,7 +1,7 @@
 {
-  "name": "node-api-mastery",
+  "name": "poos-api",
   "version": "1.0.0",
-  "description": "I intend to master node after this course",
+  "description": "This is the backend for the prrof of originality project",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
