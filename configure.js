@@ -9,7 +9,7 @@ module.exports = {
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET,
     port: process.env.PORT || 3000 ,
-    frontend_url: process.env.FRONEND_URL,
+    frontend_url: process.env.FRONTEND_URL,
 
 };
 
