@@ -55,7 +55,7 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(conFig.mongoUri.toString())
 .then(result => {
-    app.listen(3000)
+    app.listen(conFig.port)
     console.log("successfully started")
 })
 .catch(

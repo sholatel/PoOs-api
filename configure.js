@@ -7,7 +7,9 @@ module.exports = {
     jwtKey : process.env.POos_jwtPrivateKey,
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,
-    apiSecret: process.env.CLOUDINARY_API_SECRET
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+    port: process.env.port || 3000 ,
+    frontend_url: process.env.FRONEND_URL,
 
 };
 

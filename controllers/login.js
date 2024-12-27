@@ -12,7 +12,7 @@ exports.LoginUser = async (req, res, next) => {
         const user = await User.findOne({ email: email });
 
         if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(400).json({ message: 'No record found for this email on our platform' });
         }
 
         if (!user.isEmailVerified) {
